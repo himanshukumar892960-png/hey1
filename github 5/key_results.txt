@@ -1,0 +1,7 @@
+Tier 1 (OpenRouter): WORKING
+Tier 2 (OpenRouter): WORKING
+Tier 3 (OpenRouter): WORKING
+Tier 4 (OpenRouter): WORKING
+Tier 5 (OpenRouter): WORKING
+Tier 6 (Gemini): WORKING
+Tier 7 (OpenRouter): WORKING

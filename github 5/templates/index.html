@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GlobleXGPT | Your AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pro_status.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/file_attachment.css') }}">
+    <link rel="icon" href="/static/img/logo.jpg">
+
+    <!-- Mobile Optimizations -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#212121">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Markdown and Code Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link id="hljs-theme" rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- KaTeX for math formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- Razorpay Payment Gateway -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <img src="/static/img/logo.jpg" alt="GlobleXGPT Logo" class="sidebar-logo">
+
+                </div>
+                <div class="action-btn" id="sidebar-close-btn" title="Close sidebar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="9" y1="3" x2="9" y2="21" />
+                    </svg>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item" id="new-chat-btn">
+                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    <span>New chat</span>
+                </div>
+
+                <div class="search-container" style="padding: 10px;">
+                    <div class="search-input-wrapper"
+                        style="background: var(--bg-hover); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"
+                            fill="none" style="color: var(--text-secondary);">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <input type="text" placeholder="Search chats..." id="history-search"
+                            style="background: transparent; border: none; color: var(--text-primary); width: 100%; outline: none; font-size: 0.9rem;">
+                    </div>
+                </div>
+
+                <div class="history-label"
+                    style="padding: 10px 10px 5px; font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">
+                    Chat History
+                </div>
+                <div class="chat-history-container" id="chat-history-list"
+                    style="flex: 1; overflow-y: auto; padding: 0 4px; display: flex; flex-direction: column; gap: 2px;">
+                    <!-- History items will appear here -->
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="menu-item" id="theme-toggle-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <span>Light Mode</span>
+                    </div>
+                    <div class="menu-item" id="change-name-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Change Name</span>
+                    </div>
+                    <div class="menu-item" id="change-avatar-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                            </path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        <span>Change Avatar</span>
+                    </div>
+                    <div class="menu-item" id="pro-plan-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="#FFD700" stroke-width="2" fill="none">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                            </path>
+                        </svg>
+                        <span style="color: #FFD700; font-weight: 600;">Pro Plan</span>
+                    </div>
+                    <div class="menu-item" id="download-app-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Download App</span>
+                    </div>
+                    <div class="menu-item" id="logout-btn">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Log Out</span>
+                    </div>
+                </div>
+                <input type="file" id="update-avatar-input" accept="image/*" style="display: none;">
+                <div class="user-info-container">
+                    <div class="nav-item" id="sidebar-login-btn">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span>Log In</span>
+                    </div>
+                    <div class="settings-btn" id="settings-trigger" style="display: none;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-left-group">
+                    <div class="action-btn" id="sidebar-open-btn" title="Open sidebar">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <line x1="9" y1="3" x2="9" y2="21" />
+                        </svg>
+                    </div>
+                    <div class="brand-dropdown">
+                        Globle<span style="color:var(--primary-color); font-size: 1.2em; font-weight: 800;">X</span>GPT
+
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <button class="pro-upgrade-btn" id="header-pro-btn" title="Upgrade to Pro">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2"
+                            fill="none">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                            </path>
+                        </svg>
+                        <span class="pro-btn-text">Upgrade to Pro</span>
+                        <span class="pro-btn-text-short">Pro</span>
+                    </button>
+                    <div class="user-profile mobile-only">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <div class="chat-wrapper" id="chat-wrapper">
+                <div class="welcome-screen" id="welcome-screen">
+                    <div id="welcome-user-container"
+                        style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                        <div id="welcome-avatar"
+                            style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin-bottom: 20px; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                            <img src="" alt="User" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h2 class="welcome-title" id="welcome-message">Where should we begin?</h2>
+
+                        <!-- Guest Upgrade Banner -->
+                        <div id="guest-upgrade-banner"
+                            style="display: none; margin-top: 10px; padding: 25px; background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05)); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 20px; text-align: center; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: fadeIn 0.8s ease-out;">
+                            <div
+                                style="background: #FFD700; color: #000; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 15px rgba(255,215,0,0.5);">
+                                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="3"
+                                    fill="none">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h3 style="color: #FFD700; margin-bottom: 8px; font-size: 1.2rem;">Get GlobleXGPT Pro</h3>
+                            <p
+                                style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.4;">
+                                Unlock Globle-1, GPT-4o, and unlimited 4K Image/Video generation for just ₹90.</p>
+                            <button onclick="document.getElementById('pro-modal').classList.remove('hidden')"
+                                style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(255,215,0,0.3);">🚀
+                                Upgrade & Scale Up</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Dynamic messages -->
+                </div>
+            </div>
+
+            <footer class="footer-container">
+                <div class="input-bar-capsule">
+                    <input type="file" id="file-attach-input" style="display: none;"
+                        accept="image/*, .pdf, .txt, .doc, .docx" multiple>
+                    <button class="plus-btn" id="attach-btn" title="Attach file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </button>
+                    <div id="file-preview-container" class="file-preview-container hidden"></div>
+                    <input type="text" id="user-input" placeholder="Ask anything" autocomplete="off">
+                    <div class="bar-actions">
+                        <button id="mic-btn" class="action-btn" title="Voice Input">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                <line x1="12" y1="19" x2="12" y2="23" />
+                                <line x1="8" y1="23" x2="16" y2="23" />
+                            </svg>
+                        </button>
+                        <button id="send-btn" class="action-btn" title="Send message">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <p id="auth-subtitle">Sign in to continue to GlobleXGPT</p>
+                <div class="close-auth" id="close-auth-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Define callback globally before GSI loads -->
+            <script>
+                function handleCredentialResponse(response) {
+                    console.log("Google Credential Received", response);
+                    // Delegate to the handler in main.js if available, or handle it here
+                    if (window.onGoogleLogin) {
+                        window.onGoogleLogin(response);
+                    } else {
+                        console.error("Auth handler not ready yet");
+                        // Fallback implementation if main.js is slow
+                        fetch('/auth/google', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ credential: response.credential })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.user) {
+                                    localStorage.setItem('user', JSON.stringify(data.user));
+                                    window.location.reload();
+                                }
+                            })
+                            .catch(e => console.error(e));
+                    }
+                }
+            </script>
+            <script src="https://accounts.google.com/gsi/client" async defer></script>
+            <div id="g_id_onload" data-client_id="{{ google_client_id }}" data-callback="handleCredentialResponse"
+                data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
+            </div>
+
+            <a href="/auth/github/login" class="github-btn"
+                style="display:flex; justify-content:center; align-items:center; width:100%; border:1px solid #ddd; padding:8px; border-radius:4px; margin-top:10px; text-decoration:none; color:inherit; background:#fff;">
+                <svg height="20" width="20" viewBox="0 0 16 16" style="margin-right:8px;">
+                    <path fill="#24292e"
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+                Sign in with GitHub
+            </a>
+            <div id="auth-loading" style="display:none; text-align:center; margin-top:10px;">
+                Logging in...
+            </div>
+
+            <div class="divider"
+                style="display:flex; align-items:center; margin: 20px 0; color: var(--text-secondary); font-size: 0.8rem;">
+                <span style="flex:1; height:1px; background:var(--border-color);"></span>
+                <span style="padding: 0 10px;">OR continue with email</span>
+                <span style="flex:1; height:1px; background:var(--border-color);"></span>
+            </div>
+
+            <form id="auth-form" class="auth-form">
+                <div class="form-group" id="name-group" style="display: none;">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" placeholder="John Doe">
+                </div>
+                <div class="form-group" id="avatar-group" style="display: none;">
+                    <label for="profile-pic">Profile Picture</label>
+                    <input type="file" id="profile-pic" accept="image/*">
+                    <input type="hidden" id="avatar-base64">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="name@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-switch">
+                <p id="auth-switch-text">Don't have an account? <span id="toggle-auth-mode"
+                        style="color:var(--primary-color); cursor:pointer; font-weight:600;">Sign up</span></p>
+            </div>
+            <div id="auth-message" class="auth-message"></div>
+        </div>
+    </div>
+
+    <!-- Pro Plan Modal -->
+    <div id="pro-modal" class="auth-modal hidden">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h2 style="color: #FFD700;">Upgrade to Pro</h2>
+                <p>Unlock advanced features and higher limits</p>
+                <div class="close-auth" id="close-pro-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="pro-plan-details" style="padding: 10px 0; text-align: center;">
+                <div class="price-tag"
+                    style="font-size: 2.5rem; font-weight: 700; color: #FFD700; margin-bottom: 10px;">
+                    ₹90 <span style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">/ month</span>
+                </div>
+
+                <ul style="list-style: none; padding: 0; margin: 20px 0; text-align: left; color: var(--text-primary);">
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#30d158" stroke-width="3" fill="none">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Powerful AI Models (GPT-4o, LLAMA-3.3-70B, DEEPSEEK-R1-0528, GPT-OSS-120B)
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#30d158" stroke-width="3" fill="none">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        24*7 Customer Support (+91 8929605880)
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#30d158" stroke-width="3" fill="none">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Priority Support & Faster Responses
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#30d158" stroke-width="3" fill="none">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        4K Image Generator/Video Generator
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#30d158" stroke-width="3" fill="none">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Most Powerful Model Globle-1
+                    </li>
+                </ul>
+
+                <div class="payment-method-capsule"
+                    style="background: rgba(255, 215, 0, 0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.2); margin-bottom: 25px; text-align: center;">
+                    <div class="payment-icon" style="margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="#AB68FF">
+                            <path
+                                d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                        </svg>
+                    </div>
+                    <h3 style="color: #FFD700; margin-bottom: 10px;">Safe & Secure Payment</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">Pay securely using
+                        UPI, Cards, or Netbanking via Razorpay.</p>
+
+                    <button id="razorpay-buy-btn" onclick="buyProPlan()" class="premium-pay-btn"
+                        style="width: 100%; padding: 15px; background: linear-gradient(135deg, #AB68FF, #7A3BFF); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(171, 104, 255, 0.3); transition: transform 0.2s;">
+                        Buy Pro Now (₹90)
+                    </button>
+
+                    <div id="payment-status-message" style="margin-top: 15px; font-size: 0.85rem;"></div>
+                </div>
+
+                <div class="manual-fallback" style="text-align: center; margin-bottom: 20px;">
+                    <details style="cursor: pointer; font-size: 0.85rem; color: var(--text-secondary);">
+                        <summary>Other Payment Methods (QR Code)</summary>
+                        <div
+                            style="margin-top: 15px; padding: 15px; background: white; border-radius: 12px; display: inline-block;">
+                            <img id="payment-qr" src="{{ url_for('static', filename='img/payment_qr.png') }}"
+                                alt="Payment QR Code" style="width: 150px; height: 150px;">
+                            <p style="color: #000; margin-top: 10px; font-weight: 600;">Scan & Pay ₹90</p>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Download App Modal -->
+    <div id="download-modal" class="auth-modal hidden">
+        <div class="auth-content" style="max-width: 550px;">
+            <div class="auth-header">
+                <h2 style="color: var(--primary-color);">Download Globle<span
+                        style="font-size: 1.25em; font-weight: 900;"></span>X</span>GPT</h2>
+                <p>Get our app on your favorite platform</p>
+                <div class="close-auth" id="close-download-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="download-options" style="padding: 20px 0;">
+                <!-- Mobile Apps -->
+                <div class="download-section" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 15px; font-weight: 600;">
+                        📱 Mobile Apps
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <a href="#" class="download-card" data-platform="android">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="#3DDC84">
+                                    <path
+                                        d="M17.6,9.48l1.84-3.18c0.16-0.31,0.04-0.69-0.26-0.85c-0.29-0.15-0.65-0.06-0.83,0.22l-1.88,3.24 c-2.86-1.21-6.08-1.21-8.94,0L5.65,5.67c-0.19-0.29-0.58-0.38-0.87-0.2C4.5,5.65,4.41,6.01,4.56,6.3L6.4,9.48 C3.3,11.25,1.28,14.44,1,18h22C22.72,14.44,20.7,11.25,17.6,9.48z M7,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25S8.25,13.31,8.25,14C8.25,14.69,7.69,15.25,7,15.25z M17,15.25c-0.69,0-1.25-0.56-1.25-1.25 c0-0.69,0.56-1.25,1.25-1.25s1.25,0.56,1.25,1.25C18.25,14.69,17.69,15.25,17,15.25z" />
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">Android
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">APK • 45 MB</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="download-card" data-platform="ios">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                                    <path
+                                        d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z" />
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">iOS</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">App Store</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Desktop Apps -->
+                <div class="download-section">
+                    <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 15px; font-weight: 600;">
+                        💻 Desktop Apps
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <a href="#" class="download-card" data-platform="windows">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="#0078D4">
+                                    <path
+                                        d="M3,12V6.75L9,5.43V11.91L3,12M20,3V11.75L10,11.9V5.21L20,3M3,13L9,13.09V19.9L3,18.75V13M20,13.25V22L10,20.09V13.1L20,13.25Z" />
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">Windows
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">ZIP • 85 MB</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="download-card" data-platform="mac">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                                    <path
+                                        d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z" />
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">macOS
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">DMG • 92 MB</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="download-card" data-platform="linux">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="#FCC624">
+                                    <path
+                                        d="M14.62,8.35C14.2,8.63 12.87,9.39 12.67,9.54C12.28,9.85 11.92,9.83 11.53,9.53C11.33,9.37 10,8.61 9.58,8.34C9.1,8.03 9.13,7.64 9.66,7.42C11.3,6.73 12.94,6.78 14.57,7.45C14.89,7.58 15.05,7.95 14.62,8.35M12,2C11.5,2 11,2.19 10.59,2.5C10.2,2.83 10,3.29 10,3.79C10,4.29 10.2,4.75 10.59,5.08C11,5.4 11.5,5.58 12,5.58C12.5,5.58 13,5.4 13.41,5.08C13.8,4.75 14,4.29 14,3.79C14,3.29 13.8,2.83 13.41,2.5C13,2.19 12.5,2 12,2M17.45,8.93C17.32,8.63 17.11,8.37 16.84,8.17C16.44,7.88 15.94,7.73 15.42,7.73C15,7.73 14.57,7.82 14.16,8C13.69,8.21 13.24,8.5 12.81,8.85C12.38,9.21 11.96,9.62 11.58,10.08C11.2,10.54 10.86,11.04 10.58,11.58C10.3,12.12 10.08,12.69 9.93,13.29C9.78,13.89 9.7,14.5 9.7,15.13C9.7,15.76 9.78,16.37 9.93,16.97C10.08,17.57 10.3,18.14 10.58,18.68C10.86,19.22 11.2,19.72 11.58,20.18C11.96,20.64 12.38,21.05 12.81,21.41C13.24,21.76 13.69,22.05 14.16,22.26C14.57,22.44 15,22.53 15.42,22.53C15.94,22.53 16.44,22.38 16.84,22.09C17.11,21.89 17.32,21.63 17.45,21.33C17.58,21.03 17.65,20.7 17.65,20.35C17.65,19.85 17.5,19.39 17.23,19C16.96,18.61 16.6,18.3 16.18,18.08C15.76,17.86 15.3,17.75 14.82,17.75C14.34,17.75 13.88,17.86 13.46,18.08C13.04,18.3 12.68,18.61 12.41,19C12.14,19.39 12,19.85 12,20.35C12,20.7 12.07,21.03 12.2,21.33C12.33,21.63 12.54,21.89 12.81,22.09C13.21,22.38 13.71,22.53 14.23,22.53C14.65,22.53 15.08,22.44 15.49,22.26C15.96,22.05 16.41,21.76 16.84,21.41C17.27,21.05 17.69,20.64 18.07,20.18C18.45,19.72 18.79,19.22 19.07,18.68C19.35,18.14 19.57,17.57 19.72,16.97C19.87,16.37 19.95,15.76 19.95,15.13C19.95,14.5 19.87,13.89 19.72,13.29C19.57,12.69 19.35,12.12 19.07,11.58C18.79,11.04 18.45,10.54 18.07,10.08C17.69,9.62 17.27,9.21 16.84,8.85C16.41,8.5 15.96,8.21 15.49,8C15.08,7.82 14.65,7.73 14.23,7.73C13.71,7.73 13.21,7.88 12.81,8.17C12.54,8.37 12.33,8.63 12.2,8.93C12.07,9.23 12,9.56 12,9.91C12,10.41 12.14,10.87 12.41,11.26C12.68,11.65 13.04,11.96 13.46,12.18C13.88,12.4 14.34,12.51 14.82,12.51C15.3,12.51 15.76,12.4 16.18,12.18C16.6,11.96 16.96,11.65 17.23,11.26C17.5,10.87 17.65,10.41 17.65,9.91C17.65,9.56 17.58,9.23 17.45,8.93Z" />
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">Linux
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">AppImage • 78 MB</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                        <a href="#" class="download-card" data-platform="web">
+                            <div class="download-icon">
+                                <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2"
+                                    fill="none">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path
+                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="download-info">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">Web App
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Install PWA</div>
+                            </div>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                                fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Info Note -->
+                <div
+                    style="margin-top: 25px; padding: 15px; background: rgba(var(--primary-rgb), 0.1); border-radius: 12px; border: 1px solid rgba(var(--primary-rgb), 0.2);">
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                        <strong style="color: var(--text-primary);">📌 Note:</strong> All downloads are secure and
+                        verified.
+                        The app provides the same features as the web version with offline capabilities and native
+                        performance.
+                    </p>
+                </div>
+
+                <!-- Promo Section Moved Here -->
+                <div class="promo-section"
+                    style="margin-top: 25px; text-align: left; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; border: 1px solid var(--border-color);">
+                    <div class="form-group">
+                        <label for="promo-code"
+                            style="font-weight: 600; color: var(--text-primary); margin-bottom: 10px; display: block;">🎁
+                            Have a Promo Code?</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="promo-code" placeholder="Enter code"
+                                style="flex: 1; min-width: 0; padding: 12px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary);">
+                            <button id="apply-promo-btn" class="auth-btn"
+                                style="width: auto; padding: 0 20px; margin:0; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-purple), var(--primary-color)); color: white; border: none; border-radius: 10px;">Apply</button>
+                        </div>
+                    </div>
+                    <div id="pro-message" class="auth-message" style="margin-top: 10px;"></div>
+                </div>
+
+                <!-- Admin Section for Changing Promo Code -->
+                <div class="admin-section"
+                    style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-color); text-align: left;">
+                    <details style="cursor: pointer;">
+                        <summary
+                            style="font-size: 0.85rem; color: var(--text-secondary); user-select: none; padding: 5px 0;">
+                            🔐 Admin: Change Promo Code
+                        </summary>
+                        <div
+                            style="margin-top: 15px; padding: 15px; background: rgba(255, 215, 0, 0.05); border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="secret-code"
+                                    style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">
+                                    Secret Code:
+                                </label>
+                                <input type="password" id="secret-code" placeholder="Enter secret code"
+                                    style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.85rem;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="new-promo-code"
+                                    style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">
+                                    New Promo Code:
+                                </label>
+                                <input type="text" id="new-promo-code" placeholder="Enter new promo code"
+                                    style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.85rem;">
+                            </div>
+                            <button id="update-promo-btn" class="auth-btn"
+                                style="width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #8B4513, #D2691E); color: white; font-weight: 700; font-size: 0.9rem; border: none;">
+                                Update Promo Code
+                            </button>
+
+                            <!-- Manual User Section -->
+                            <div
+                                style="margin-top: 20px; border-top: 1px dashed rgba(255, 215, 0, 0.2); padding-top: 15px;">
+                                <label for="upgrade-user-email"
+                                    style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">
+                                    Authorize Paid User Email:
+                                </label>
+                                <input type="email" id="upgrade-user-email" placeholder="user@example.com"
+                                    style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.85rem;">
+                                <button id="upgrade-user-btn" class="auth-btn"
+                                    style="width: 100%; margin-top: 10px; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #FFD700, #FFA500); color: black; font-weight: 700; font-size: 0.9rem; border: none;">
+                                    Grant 30 Days PRO Access
+                                </button>
+                            </div>
+
+                            <div id="admin-message" class="auth-message" style="margin-top: 10px; font-size: 0.85rem;">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.RAZORPAY_KEY_ID = "{{ razorpay_key_id }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/voice_assistant.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/razorpay_config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

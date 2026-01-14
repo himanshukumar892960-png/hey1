@@ -1,0 +1,12 @@
+flask
+flask-cors
+python-dotenv
+google-generativeai
+google-auth
+requests
+runwayml
+google-api-python-client
+gunicorn
+# These might fail on some serverless platforms
+# pyautogui
+# opencv-python-headless
